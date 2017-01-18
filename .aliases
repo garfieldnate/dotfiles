@@ -156,3 +156,8 @@ alias reload="exec $SHELL -l"
 
 # Print each PATH entry on a separate line
 alias path='echo -e ${PATH//:/\\n}'
+
+# Kill all docker containers
+alias teaparty='docker kill $(docker ps -q)'
+
+alias psearch='ps aux | grep'
