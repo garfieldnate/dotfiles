@@ -164,10 +164,20 @@ alias teaparty='docker kill $(docker ps -q)'
 
 alias psearch='ps aux | grep'
 
-#Paths I use a lot
+# Paths I use a lot
 alias d="cd ~/Dropbox (Personal)"
 alias dl="cd ~/Downloads"
 alias dt="cd ~/Desktop"
 alias jw="cd ~/dev/workspaces/java_workspace/"
 alias pw="cd ~/dev/workspaces/python_workspace/"
-alias am="cd ~/dev/personal_workspace/java_workspace/Weka_AnalogicalModeling/"
+
+# current time for locations/people I care about
+alias californiatime="TZ=America/Los_Angeles date"
+alias momtime="TZ=America/Los_Angeles date"
+alias ohiotime="TZ=America/Detroit date"
+alias karentime="TZ=America/Detroit date"
+alias utahtime="TZ=America/Denver date"
+alias joshtime="TZ=America/Denver date"
+alias arizonatime="TZ=UTC+7 date"
+alias chelantime="TZ=UTC+7 date"
+alias japantime="TZ=Japan date"
