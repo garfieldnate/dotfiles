@@ -13,12 +13,16 @@ alias g="git"
 alias h="history"
 alias j="jobs"
 alias p3="python3"
-# pip3 install beautifulsoup4 requests tabulate lxml leo-cli
-alias de="leo"
+alias py3="p3"
+# pip3 install my forked version here: https://github.com/garfieldnate/leo-cli
+function de() {
+    python -u $(which leo) $@ | less
+}
 # pip3 install myougiden
 alias jp="myougiden"
 # npm install -g ndic
 alias ko="ndic"
+# TODO: zh
 
 # Detect which `ls` flavor is in use
 if ls --color > /dev/null 2>&1; then # GNU `ls`
@@ -160,7 +164,7 @@ alias teaparty='docker kill $(docker ps -q)'
 
 alias psearch='ps aux | grep'
 
-# Paths I use a lot
+#Paths I use a lot
 alias d="cd ~/Dropbox (Personal)"
 alias dl="cd ~/Downloads"
 alias dt="cd ~/Desktop"
