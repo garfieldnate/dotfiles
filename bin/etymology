@@ -1,0 +1,48 @@
+#!/usr/local/bin/python3
+#coding=utf-8
+
+# From https://gist.github.com/ly0/8819888
+
+import os
+import re
+import requests
+import sys
+import time
+
+from bs4 import BeautifulSoup
+
+def etymology(key):
+    page = requests.get("http://www.etymonline.com/index.php?term=" + key).text
+    if 'No matching terms found.' in page:
+        return None
+    try:
+        soup = BeautifulSoup(page, 'lxml')
+        foo = soup.findAll('div', id='dictionary')[0]
+        ret = foo.text
+        return ret
+    except:
+        pass
+    return None
+
+if __name__ == '__main__':
+    if len(sys.argv) != 2:
+        print('Usage: %s [WORD]' % sys.argv[0])
+        sys.exit(1)
+    foo = etymology(sys.argv[1])
+    if foo:
+        foo = foo.replace('\n\n','')
+        foo += '\n'
+        print(foo)
+        #log
+        date = '%d-%d-%d' % (time.localtime().tm_year,time.localtime().tm_mon,time.localtime().tm_mday)
+        try:
+            f = open(os.path.expanduser("~/") + 'etym.log','r+')
+        except:
+            open(os.path.expanduser("~/") + 'etym.log','w').close()
+            f = open(os.path.expanduser("~/") + 'etym.log','r+')
+        if not date in f.read():
+            f.writelines(date + '\n')
+        f.writelines('[%s]\n%s\n\n\n' % (sys.argv[1],foo))
+        f.close()
+    else:
+        print('Not Found')
