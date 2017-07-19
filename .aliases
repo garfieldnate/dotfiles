@@ -20,6 +20,8 @@ function de() {
 }
 # pip3 install myougiden
 alias jp="myougiden"
+alias ｊｐ=jp
+alias ＪＰ=jp
 # npm install -g ndic
 alias ko="ndic"
 # TODO: zh
