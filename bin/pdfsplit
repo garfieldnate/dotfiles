@@ -1,0 +1,4 @@
+#!/usr/bin/env perl
+use PDF::Extract;
+$pdf=new PDF::Extract;
+$pdf->servePDFExtract( PDFDoc=>$ARGV[0], PDFPages=>$ARGV[1]);
