@@ -14,10 +14,13 @@ alias h="history"
 alias j="jobs"
 alias p3="python3"
 alias py3="p3"
-# pip3 install my forked version here: https://github.com/garfieldnate/leo-cli
+
+# pip3 install leo-cli
 function de() {
     leo $@ | less
 }
+alias fr='de -l fr'
+
 # pip3 install myougiden
 alias jp="myougiden"
 alias ｊｐ=jp
