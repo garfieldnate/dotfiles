@@ -17,17 +17,17 @@ alias py3="p3"
 
 # pip3 install leo-cli
 function de() {
-    echo $@ >> dic_lookups/de.txt;
+    echo $@$'\t'$(date -u) >> dic_lookups/de.txt;
     leo $@ | less;
 }
 function fr() {
-    echo $@ >> dic_lookups/fr.txt;
+    echo $@$'\t'$(date -u) >> dic_lookups/fr.txt;
     leo -l fr $@ | less;
 }
 
 # pip3 install myougiden
 function jp() {
-    echo $@ >> dic_lookups/jp.txt;
+    echo $@$'\t'$(date -u) >> dic_lookups/jp.txt;
     myougiden $@;
 }
 # alias jp="myougiden"
@@ -36,12 +36,12 @@ alias ＪＰ=jp
 
 # npm install -g ndic
 function ko() {
-    echo $@ >> dic_lookups/ko.txt;
+    echo $@$'\t'$(date -u) >> dic_lookups/ko.txt;
     ndic $@;
 }
 
 function en() {
-    echo $@ >> dic_lookups/en.txt;
+    echo $@$'\t'$(date -u) >> dic_lookups/en.txt;
     mac_dic_lookup $@;
 }
 
