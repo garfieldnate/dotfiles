@@ -15,20 +15,29 @@ alias j="jobs"
 alias p3="python3"
 alias py3="p3"
 
+function save_word {
+    read -p "Save study card for $1? (y/n)" yn
+    case $yn in
+        [Yy]* ) echo $1$'\t'$(date -u) >> ~/dic_lookups/$2.txt;;
+        * ) echo 'Not saving word';;
+    esac
+}
+
 # pip3 install leo-cli
 function de() {
-    echo $@$'\t'$(date -u) >> dic_lookups/de.txt;
     leo $@ | less;
+    save_word "$*" 'de';
 }
+
 function fr() {
-    echo $@$'\t'$(date -u) >> dic_lookups/fr.txt;
     leo -l fr $@ | less;
+    save_word "$*" 'fr';
 }
 
 # pip3 install myougiden
 function jp() {
-    echo $@$'\t'$(date -u) >> dic_lookups/jp.txt;
     myougiden $@;
+    save_word "$*" 'jp';
 }
 # alias jp="myougiden"
 alias ｊｐ=jp
@@ -36,13 +45,13 @@ alias ＪＰ=jp
 
 # npm install -g ndic
 function ko() {
-    echo $@$'\t'$(date -u) >> dic_lookups/ko.txt;
     ndic $@;
+    save_word "$*" 'ko';
 }
 
 function en() {
-    echo $@$'\t'$(date -u) >> dic_lookups/en.txt;
     mac_dic_lookup $@;
+    save_word "$*" 'en';
 }
 
 alias etym="etymology"
