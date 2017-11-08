@@ -17,17 +17,33 @@ alias py3="p3"
 
 # pip3 install leo-cli
 function de() {
-    leo $@ | less
+    echo $@ >> dic_lookups/de.txt;
+    leo $@ | less;
 }
-alias fr='de -l fr'
+function fr() {
+    echo $@ >> dic_lookups/fr.txt;
+    leo -l fr $@ | less;
+}
 
 # pip3 install myougiden
-alias jp="myougiden"
+function jp() {
+    echo $@ >> dic_lookups/jp.txt;
+    myougiden $@;
+}
+# alias jp="myougiden"
 alias ｊｐ=jp
 alias ＪＰ=jp
+
 # npm install -g ndic
-alias ko="ndic"
-# TODO: zh
+function ko() {
+    echo $@ >> dic_lookups/ko.txt;
+    ndic $@;
+}
+
+function en() {
+    echo $@ >> dic_lookups/en.txt;
+    mac_dic_lookup $@;
+}
 
 alias etym="etymology"
 
