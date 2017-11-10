@@ -18,7 +18,7 @@ alias py3="p3"
 function save_word {
     read -p "Save study card for $1? (y/n)" yn
     case $yn in
-        [Yy]* ) echo $1$'\t'$(date -u) >> ~/dic_lookups/$2.txt;;
+        [Yy]* ) echo "{\"headword\": \"$1\", \"created\": \"$(date -u)\"}" >> ~/dic_lookups/$2.txt;;
         * ) echo 'Not saving word';;
     esac
 }
