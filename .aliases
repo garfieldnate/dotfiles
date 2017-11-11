@@ -18,7 +18,7 @@ alias py3="p3"
 function save_word {
     read -p "Save study card for $1? (y/n)" yn
     case $yn in
-        [Yy]* ) tango add $1 $2;;
+        [Yy]* ) tango add $1 "\"$2\"";;
         * ) echo 'Not saving word';;
     esac
 }
