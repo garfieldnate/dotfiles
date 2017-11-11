@@ -46,6 +46,7 @@ def add(language, headword, add_data):
     entry['created'] = datetime.datetime.now(datetime.timezone.utc).strftime("%a %b %d %H:%M:%S %Z %Y")
 
     if add_data:
+        entry['morphology'] = click.prompt("Morphology")
         entry['definition'] = click.prompt("Enter definition").strip()
 
         # open browser in example search
@@ -68,7 +69,7 @@ def add(language, headword, add_data):
             except Exception as e:
                 click.echo("Could not download image: " + str(e))
 
-        entry['notes'] = click.prompt("Other notes").strip()
+        # entry['notes'] = click.prompt("Other notes").strip()
     output_file = dic_path / (language + '.txt')
     with open(output_file, 'a') as f:
         print(json.dumps(entry), file=f)
