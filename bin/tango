@@ -16,6 +16,15 @@ dic_path = Path.home() / 'dic_lookups'
 delete_last_line = "\033[1A[\033[2K"
 
 IMAGE_SEARCH_URL = "https://www.bing.de/images/search?q="
+def _get_image_search_url(word):
+    return IMAGE_SEARCH_URL + url_quote(word)
+
+EXAMPLE_SEARCH_URL = "https://tatoeba.org/eng/sentences/search?from={}&to=und&query={}"
+TATOEBA_LANGS = {'de': 'deu','fr':'fra','vi':'vie','en':'eng', 'zh':'cmn','jp':'jpn'}
+def _get_example_url(lang,word):
+    click.echo(EXAMPLE_SEARCH_URL.format(TATOEBA_LANGS[lang], url_quote(word)))
+    return EXAMPLE_SEARCH_URL.format(TATOEBA_LANGS[lang], url_quote(word))
+
 # Pretend to be a browser or some servers won't allow image access (lookin' at you, Etsy!)
 REQUEST_HEADERS = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
 BASE64_JPG_PREFIX = '/9j/'
@@ -38,11 +47,14 @@ def add(language, headword, add_data):
 
     if add_data:
         entry['definition'] = click.prompt("Enter definition").strip()
+
+        # open browser in example search
+        webbrowser.open(_get_example_url(language, headword), new=2)
+        print('hello?')
         entry['example'] = click.prompt("Enter example sentence").strip()
-        entry['notes'] = click.prompt("Other notes").strip()
 
         # open browser in image search so user can select an image URL
-        webbrowser.open(IMAGE_SEARCH_URL + url_quote(headword), new=2)
+        webbrowser.open(_get_image_search_url(headword), new=2)
         # download the image and save as Base64 text
         image_url = click.prompt("Enter image URL").strip()
         if image_url:
@@ -55,6 +67,8 @@ def add(language, headword, add_data):
                     raise ValueError('Image data was not JPG')
             except Exception as e:
                 click.echo("Could not download image: " + str(e))
+
+        entry['notes'] = click.prompt("Other notes").strip()
     output_file = dic_path / (language + '.txt')
     with open(output_file, 'a') as f:
         print(json.dumps(entry), file=f)
