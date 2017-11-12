@@ -6,23 +6,30 @@ import json
 from os import listdir
 from os.path import isfile, join
 from pathlib import Path
+import sys
 from urllib.parse import quote as url_quote
 import webbrowser
 
+from asciimatics.widgets import Frame, ListBox, Layout, Divider, Text, \
+    Button, TextBox, Widget, Label
+from asciimatics.scene import Scene
+from asciimatics.screen import Screen
+from asciimatics.exceptions import ResizeScreenError, NextScene, StopApplication
 import click
 import requests
 
 dic_path = Path.home() / 'dic_lookups'
 delete_last_line = "\033[1A[\033[2K"
 
-IMAGE_SEARCH_URL = "https://www.bing.de/images/search?q="
+WIKTIONARY_URL = "https://de.wiktionary.org/wiki/"
+
+IMAGE_SEARCH_URL = "https://www.bing.de/images/search?&cc=de%2cde&setmkt=de-de&setlang=de-de&q="
 def _get_image_search_url(word):
     return IMAGE_SEARCH_URL + url_quote(word)
 
 EXAMPLE_SEARCH_URL = "https://tatoeba.org/eng/sentences/search?from={}&to=und&query={}"
 TATOEBA_LANGS = {'de': 'deu','fr':'fra','vi':'vie','en':'eng', 'zh':'cmn','jp':'jpn'}
 def _get_example_url(lang,word):
-    click.echo(EXAMPLE_SEARCH_URL.format(TATOEBA_LANGS[lang], url_quote(word)))
     return EXAMPLE_SEARCH_URL.format(TATOEBA_LANGS[lang], url_quote(word))
 
 # Pretend to be a browser or some servers won't allow image access (lookin' at you, Etsy!)
@@ -36,8 +43,7 @@ def tango():
 @tango.command()
 @click.argument('language')
 @click.argument('headword')
-@click.option('--add-data', prompt="Add additional data?", default=False)
-def add(language, headword, add_data):
+def add(language, headword):
     entry = {}
     # Prompt so that user can edit headword; gender, plural, etc.
     headword = click.prompt("Headword", default=headword).strip()
@@ -45,13 +51,14 @@ def add(language, headword, add_data):
     # same format as date -u
     entry['created'] = datetime.datetime.now(datetime.timezone.utc).strftime("%a %b %d %H:%M:%S %Z %Y")
 
+    # add_data = click.prompt("Add additional data?", default=False)
+    add_data = True
     if add_data:
         entry['morphology'] = click.prompt("Morphology")
         entry['definition'] = click.prompt("Enter definition").strip()
 
-        # open browser in example search
-        webbrowser.open(_get_example_url(language, headword), new=2)
-        print('hello?')
+        # open browser to search for example sentences
+        # webbrowser.open(_get_example_url(language, headword), new=2)
         entry['example'] = click.prompt("Enter example sentence").strip()
 
         # open browser in image search so user can select an image URL
@@ -82,20 +89,82 @@ def _get_as_base64text(url):
     return base64.b64encode(requests.get(url, headers = REQUEST_HEADERS).content).decode('ascii')
 
 @tango.command()
-@click.argument('language')
+@click.argument('language', default='all')
 def study(language):
     """Review the tango for the selected language. If 'all', review all tango for all languages"""
     if language == 'all':
         dic_files = [dic_path / f for f in listdir(dic_path) if isfile(dic_path / f)]
     else:
         dic_files = [join(dic_path, language + '.txt')]
+
+    entries = []
     for file in dic_files:
         with open(file) as f:
             for line in f:
-                entry = json.loads(line.strip())
-                click.echo(entry['headword'])
-                input(">> press enter to go to next word")
-                print(delete_last_line)
+                entries.append(json.loads(line.strip()))
+                # if 'headword' in entry:
+                #     click.echo(entry['headword'])
+                #     input(">> press enter to go to next word")
+                #     print(delete_last_line)
+                # else:
+                #     click.echo(f"Missing headword in entry in file {file}")
+
+    def show_cards(screen, start_scene):
+        scenes = []
+        for idx, entry in enumerate(entries):
+            scenes.append(Scene([TangoView(screen, entry, idx)], -1, name=str(idx)))
+        print("playing scenes")
+        screen.play(scenes, stop_on_resize=True, start_scene=start_scene)
+
+    current_scene = None
+    while True:
+        try:
+            Screen.wrapper(show_cards, catch_interrupt=True, arguments=[current_scene])
+            sys.exit(0)
+        except ResizeScreenError as e:
+            current_scene = e.scene
+
+class TangoView(Frame):
+    def __init__(self, screen, tango, index):
+        super(TangoView, self).__init__(screen,
+                                          screen.height * 2 // 3,
+                                          screen.width * 2 // 3,
+                                          hover_focus=True,
+                                          title="Tango",
+                                          reduce_cpu=True)
+        self.disabled = True
+        self.data = tango
+        self.index = index
+
+        # Create the form for displaying the list of contacts.
+        layout = Layout([100], fill_frame=True)
+        self.add_layout(layout)
+        for keyword in ['headword', 'morphology', 'definition', 'example', 'notes']:
+            if keyword in tango:
+                if keyword == 'headword':
+                    layout.add_widget(Text(keyword.title(), keyword))
+                else:
+                    layout.add_widget(TextBox(Widget.FILL_FRAME, keyword.title(), keyword, as_string=True))
+        layout2 = Layout([1, 1, 1, 1])
+        self.add_layout(layout2)
+        layout2.add_widget(Button("Next", self._next), 0)
+        layout2.add_widget(Button("Exit", self._exit), 3)
+        self.fix()
+
+    @staticmethod
+    def _exit():
+        sys.exit(0)
+
+    def reset(self):
+        pass
+        # Do standard reset to clear out form, then populate with new data.
+        # super(ContactView, self).reset()
+        # self.data = self._model.get_current_contact()
+
+    def _next(self):
+        # self.save()
+        # self._model.update_current_contact(self.data)
+        raise NextScene()
 
 if __name__ == '__main__':
     tango()
