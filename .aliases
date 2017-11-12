@@ -15,6 +15,15 @@ alias j="jobs"
 alias p3="python3"
 alias py3="p3"
 
+# pip install termdown
+function timer {
+    termdown $@;
+    while :; do
+        afplay ~/sounds/alarm.mp3;
+    done
+}
+alias alarm="timer"
+
 function save_word {
     read -p "Save study card for $1? (y/n)" yn
     case $yn in
@@ -88,6 +97,9 @@ alias sudo='sudo '
 
 # Get week number
 alias week='date +%V'
+
+# Stopwatch
+alias stopwatch='echo "Timer started. Stop with Ctrl-D." && date && time cat && date'
 
 # Get macOS Software Updates, and update installed Ruby gems, Homebrew, npm, and their installed packages
 alias update='sudo softwareupdate -i -a; brew update; brew upgrade; brew cleanup; npm install npm -g; npm update -g; sudo gem update --system; sudo gem update; sudo gem cleanup'
