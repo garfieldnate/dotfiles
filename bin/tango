@@ -77,7 +77,7 @@ def add(language, headword):
             except Exception as e:
                 click.echo("Could not download image: " + str(e))
 
-        # entry['notes'] = click.prompt("Other notes").strip()
+        entry['notes'] = click.prompt("Other notes", default=" ").strip()
     output_file = dic_path / (language + '.txt')
     with open(output_file, 'a') as f:
         print(json.dumps(entry), file=f)
