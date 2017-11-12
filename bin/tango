@@ -89,12 +89,12 @@ def _get_as_base64text(url):
         return url[len(data_url_prefix) + 1:]
     return base64.b64encode(requests.get(url, headers = REQUEST_HEADERS).content).decode('ascii')
 
-c = None
 
 @tango.command()
 @click.argument('language', default='all')
 def study(language):
-    """Review the tango for the selected language. If 'all', review all tango for all languages"""
+    """Review the tango for the selected language. If 'all' (default), review all tango for all languages.
+    Shortcuts: ctrl-f=forward, ctrl-b=backward, ctrl-x=quit."""
     if language == 'all':
         dic_files = [dic_path / f for f in listdir(dic_path) if isfile(dic_path / f)]
     else:
@@ -122,8 +122,6 @@ def study(language):
             sys.exit(0)
         except ResizeScreenError as e:
             current_scene = e.scene
-
-    print()
 
 class ViewState():
     def __init__(self, entries):
