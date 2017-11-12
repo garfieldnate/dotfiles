@@ -22,16 +22,16 @@ import requests
 dic_path = Path.home() / 'dic_lookups'
 delete_last_line = "\033[1A[\033[2K"
 
-WIKTIONARY_URL = "https://de.wiktionary.org/wiki/"
-
 IMAGE_SEARCH_URL = "https://www.bing.de/images/search?&cc=de%2cde&setmkt=de-de&setlang=de-de&q="
 def _get_image_search_url(word):
     return IMAGE_SEARCH_URL + url_quote(word)
 
+WIKTIONARY_URL = "https://{}.wiktionary.org/wiki/{}"
 EXAMPLE_SEARCH_URL = "https://tatoeba.org/eng/sentences/search?from={}&to=und&query={}"
 TATOEBA_LANGS = {'de': 'deu','fr':'fra','vi':'vie','en':'eng', 'zh':'cmn','jp':'jpn'}
 def _get_example_url(lang,word):
-    return EXAMPLE_SEARCH_URL.format(TATOEBA_LANGS[lang], url_quote(word))
+    return WIKTIONARY_URL.format(lang, url_quote(word))
+    # return EXAMPLE_SEARCH_URL.format(TATOEBA_LANGS[lang], url_quote(word))
 
 # Pretend to be a browser or some servers won't allow image access (lookin' at you, Etsy!)
 REQUEST_HEADERS = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
@@ -109,11 +109,8 @@ def study(language):
     # index- the index of the entry currently shown in TangoView
     view_state = ViewState(entries)
     def show_cards(screen, start_scene):
-        def global_shortcuts(event):
-            current_scene = screen._scenes[screen._scene_index]
-            current_scene._effects[0].handle_event(event)
         scenes = [Scene([TangoView(screen, entries, view_state)], -1, name="TangoView")]
-        screen.play(scenes, stop_on_resize=True, start_scene=start_scene, unhandled_input=global_shortcuts)
+        screen.play(scenes, stop_on_resize=True, start_scene=start_scene)
 
     current_scene = None
     while True:
@@ -187,7 +184,7 @@ class TangoView(Frame):
         self.view_state.previous_tango()
         raise NextScene()
 
-    def handle_event(self, event):
+    def process_event(self, event):
         if isinstance(event, KeyboardEvent):
             c = event.key_code
             # ctr-b for back
@@ -200,6 +197,9 @@ class TangoView(Frame):
             # Stop on ctrl+q, ctrl-x: TODO: something else is stealing the ctrl-q event
             elif c in (17, 24):
                 self._exit()
+
+        # Now pass on to lower levels for normal handling of the event.
+        return super(TangoView, self).process_event(event)
 
 if __name__ == '__main__':
     tango()
