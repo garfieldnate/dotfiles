@@ -27,8 +27,8 @@ alias alarm="timer"
 function save_word {
     read -p "Save study card for $1? (y/n)" yn
     case $yn in
-        [Yy]* ) tango add $1 "\"$2\"";;
-        * ) echo 'Not saving word';;
+        [Nn]* ) echo 'Not saving word';;
+        * ) tango add $1 "\"$2\"";;
     esac
 }
 
