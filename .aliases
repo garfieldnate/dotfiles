@@ -15,14 +15,36 @@ alias j="jobs"
 alias p3="python3"
 alias py3="p3"
 
+function alarm_forever() {
+    # play one part of the track at a time so that this function can be killed any time
+    while :; do
+        afplay --time .72 ~/sounds/alarm.mp3;
+    done
+}
+
+function alarm_until_input() {
+    alarm_forever &
+    pid=$!;
+    read  -n 1 -p "$*";
+    kill -9 $pid;
+}
+
 # pip install termdown
 function timer {
     termdown $@;
-    while :; do
-        afplay ~/sounds/alarm.mp3;
-    done
+    alarm_until_input "[Press any key to stop]"
 }
 alias alarm="timer"
+
+function rice {
+    echo "1. Wash rice. Place in pressure cooker with 1-1 water-rice ratio."
+    echo "2. Place the pressure cooker on the stove on high."
+    read  -n 1 -p "3. When the pressure pot starts whistling, press any key to start the timer."
+    termdown --title "Tweet!" 2m
+    alarm_until_input "4. Take pot off heat and press any key."
+    termdown --title "Rice!" 10m
+    alarm_until_input "Rice is ready."
+}
 
 function save_word {
     read -p "Save study card for $1? (y/n)" yn
