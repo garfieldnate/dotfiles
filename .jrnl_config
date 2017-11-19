@@ -1,0 +1,20 @@
+{
+  "default_hour": 9,
+  "linewrap": 79,
+  "encrypt": false,
+  "default_minute": 0,
+  "tagsymbols": "@",
+  "editor": "subl -n -w",
+  "timeformat": "%Y-%m-%d %H:%M",
+  "highlight": true,
+  "journals": {
+    "default": {
+      "timeformat": "%Y-%m-%d",
+      "default_hour": 0,
+      "journal": "~/Dropbox (Personal)/doris.txt"
+    },
+    "personal": {
+      "journal": "~/Dropbox (Personal)/journal.txt"
+    }
+  }
+}
