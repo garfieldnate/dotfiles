@@ -42,7 +42,7 @@ function rice {
     read  -n 1 -p "3. When the pressure pot starts whistling, press any key to start the timer."
     termdown --title "Tweet!" 2m
     alarm_until_input "4. Take pot off heat and press any key."
-    termdown --title "Rice!" 10m
+    termdown --title "Rice!" 13m
     alarm_until_input "Rice is ready."
 }
 
