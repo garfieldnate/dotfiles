@@ -42,15 +42,15 @@ function rice {
     read  -n 1 -p "3. When the pressure pot starts whistling, press any key to start the timer."
     termdown --title "Tweet!" 2m
     alarm_until_input "4. Take pot off heat and press any key."
-    termdown --title "Rice!" 13m
+    termdown --title "RICE" 11m
     alarm_until_input "Rice is ready."
 }
 
 function save_word {
-    read -p "Save study card for $1? (y/n)" yn
+    read -p "Save study card for $1? [Y/n]" yn
     case $yn in
         [Nn]* ) echo 'Not saving word';;
-        * ) tango add $1 "\"$2\"";;
+        * ) tango add $1 "$2";;
     esac
 }
 
