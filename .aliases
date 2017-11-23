@@ -36,6 +36,7 @@ function timer {
 }
 alias alarm="timer"
 
+# TODO: ask if user soaked the rice first
 function rice {
     echo "1. Wash rice. Place in pressure cooker with 1-1 water-rice ratio."
     echo "2. Place the pressure cooker on the stove on high."
@@ -43,7 +44,8 @@ function rice {
     termdown --title "Tweet!" 2m
     alarm_until_input "4. Take pot off heat and press any key."
     termdown --title "RICE" 11m
-    alarm_until_input "Rice is ready."
+    alarm_until_input "5. Open the pot and stir the rice immediately."
+    alarm_until_input "6. Eat!"
 }
 
 function save_word {
@@ -54,34 +56,59 @@ function save_word {
     esac
 }
 
+# all of the mac_dic_lookup commands below require installing the desired dictionary in Dictionary.app
+# code for the lookup script is at https://github.com/garfieldnate/DictionaryKit
+
 # pip3 install leo-cli
+# alternative: mac_dic_lookup "Duden-Wissensnetz deutsche Sprache" "$*"
+# alternative: mac_dic_lookup "Oxford German Dictionary" "$*"
 function de() {
     leo $@ | less;
     save_word 'de' "$*";
 }
 
+# alternative: mac_dic_lookup "Multidictionnaire de la langue française" "$*"
 function fr() {
     leo -l fr $@ | less;
     save_word'fr' "$*" ;
 }
 
 # pip3 install myougiden
+# alternative: mac_dic_lookup "ウィズダム英和辞典 / ウィズダム和英辞典" "$*"
+# alternative: mac_dic_lookup "スーパー大辞林" "$*"
 function jp() {
     myougiden $@;
     save_word 'jp' "$*" ;
 }
-# alias jp="myougiden"
 alias ｊｐ=jp
 alias ＪＰ=jp
 
-# npm install -g ndic
+# alternative: w3m "http://m.endic.naver.com/search.nhn?query=${@// /%20}&searchOption=all#ly2"
+# alternative: mac_dic_lookup "뉴에이스 국어사전" "$*"
 function ko() {
-    ndic $@;
+    mac_dic_lookup "뉴에이스 영한사전 / 뉴에이스 한영사전" "$*" | format_dic_entries.py ko | less -R
     save_word 'ko' "$*" ;
 }
 
+# also available: 现代汉语规范词典
+function zh() {
+    mac_dic_lookup "牛津英汉汉英词典" "$*" | format_dic_entries.py zh | less -R
+    save_word 'zh' "$*" ;
+}
+alias zhsimple=zh
+
+function zhtrad() {
+    mac_dic_lookup "五南國語活用辭典" "$*" | format_dic_entries.py zh | less -R
+    save_word 'zh' "$*" ;
+}
+
 function en() {
-    mac_dic_lookup $@;
+    mac_dic_lookup "New Oxford American Dictionary" "$*" | format_dic_entries.py en | less -R;
+    save_word 'en' "$*" ;
+}
+
+function thesaurus() {
+    mac_dic_lookup  "Oxford American Writer's Thesaurus" "$*" | format_dic_entries.py en | less -R
     save_word 'en' "$*" ;
 }
 
