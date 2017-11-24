@@ -67,8 +67,8 @@ def main():
         # add extra spacing immediately after numbered bullets
         for info in body.select('.gramb > .semb > .lev'): # would use :first-child if bs4 made it available
             info.string = ' ' + info.get_text().strip()
-        # pronunciation key in pinyin
-        for pronunciation in body.select('.pr'):
+        # pronunciation key in pinyin and IPA/American respelling
+        for pronunciation in body.select('.pr, .prx'):
             pronunciation.string = bcolors.WARNING + pronunciation.get_text() + bcolors.ENDC
         # links
         for label_el in body.select('a'):
