@@ -92,15 +92,15 @@ function ko() {
 
 # also available: 现代汉语规范词典
 function zh() {
-    mac_dic_lookup "牛津英汉汉英词典" "$*" | format_dic_entries.py zh | less -R
+    mac_dic_lookup "牛津英汉汉英词典" "$*" html | format_dic_entries.py zh | less -R
     save_word 'zh' "$*" ;
 }
 alias zhsimple=zh
 
-function zhtrad() {
-    mac_dic_lookup "五南國語活用辭典" "$*" | format_dic_entries.py zh | less -R
-    save_word 'zh' "$*" ;
-}
+# function zhtrad() {
+#     mac_dic_lookup "五南國語活用辭典" "$*" html | format_dic_entries.py zh | less -R
+#     save_word 'zh' "$*" ;
+# }
 
 function en() {
     mac_dic_lookup "New Oxford American Dictionary" "$*" | format_dic_entries.py en | less -R;
