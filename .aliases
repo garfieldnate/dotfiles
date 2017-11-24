@@ -97,10 +97,12 @@ function zh() {
 }
 alias zhsimple=zh
 
-# function zhtrad() {
-#     mac_dic_lookup "五南國語活用辭典" "$*" html | format_dic_entries.py zh | less -R
-#     save_word 'zh' "$*" ;
-# }
+# gem install bcat
+# TODO: parse the HTML and show in the CLI
+function zhtrad() {
+    mac_dic_lookup "五南國語活用辭典" "$*" html | bcat
+    save_word 'zh' "$*" ;
+}
 
 function en() {
     mac_dic_lookup "New Oxford American Dictionary" "$*" | format_dic_entries.py en | less -R;
