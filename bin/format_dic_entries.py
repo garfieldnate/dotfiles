@@ -3,6 +3,8 @@
 import re
 import sys
 
+ENTRY_SEP = '============== END ENTRY =============='
+
 
 class bcolors:
     HEADER = '\033[95m'
@@ -19,21 +21,34 @@ def main():
     try:
         lang = sys.argv[1]
     except IndexError:
-        print('You did not provide the language to format for')
+        print('You did not provide the language to format for (every dictionary is formatted differently)')
         sys.exit()
     if len(sys.argv) == 3:
         input_stream = open(sys.argv[2])
     else:
         input_stream = sys.stdin
+
+    # output is entries separated by the string
+    entry_text = ''
+    for line in input_stream:
+        if '============== END ENTRY ==============' in line:
+            print_entry(lang, entry_text)
+            entry_text = ''
+            print()
+            continue
+        entry_text += line
+
+
+def print_entry(lang, entry_text):
     if lang == 'en':
-        for line in input_stream:
+        for line in entry_text.splitlines():
             line = re.sub(r'\|(.+?)\|', bcolors.HEADER + r'/\1/' + bcolors.ENDC, line)
             line = re.sub(r'▶', '\n\n ' + bcolors.FAIL + '▶ ' + bcolors.ENDC, line)
             line = re.sub(r'• ', '\n   ' + bcolors.OKGREEN + '• ' + bcolors.ENDC, line)
-            line = re.sub(r'(‘|“)(.+?)(’|”)', bcolors.WARNING + r'“\2”' + bcolors.ENDC, line)
+            line = re.sub(r'([‘“])(.+?)([’”])', bcolors.WARNING + r'“\2”' + bcolors.ENDC, line)
             print(line)
     elif lang == 'ko':
-        for line in input_stream:
+        for line in entry_text.splitlines():
             line = re.sub(r'\|(.+?)\|', bcolors.HEADER + r'/\1/' + bcolors.ENDC, line)
             line = re.sub(r'• ', '\n   ' + bcolors.OKGREEN + '• ' + bcolors.ENDC, line)
             # circled numbers
@@ -48,11 +63,10 @@ def main():
         # requires HTML input
         from bs4 import BeautifulSoup
         try:
-            soup = BeautifulSoup(input_stream, 'lxml')
+            soup = BeautifulSoup(entry_text, 'lxml')
         except Exception as e:
             print("Error parsing stdin in format_dic_entries.py; did you input text instead of HTML?")
             raise e
-        indent = '  '
 
         body = soup.find("body")
 
@@ -65,7 +79,7 @@ def main():
         for info in body.select('.ps, .lev'):
             info.string = bcolors.BOLD + info.get_text() + bcolors.ENDC
         # add extra spacing immediately after numbered bullets
-        for info in body.select('.gramb > .semb > .lev'): # would use :first-child if bs4 made it available
+        for info in body.select('.gramb > .semb > .lev'):  # would use :first-child if bs4 made it available
             info.string = ' ' + info.get_text().strip()
         # pronunciation key in pinyin and IPA/American respelling
         for pronunciation in body.select('.pr, .prx'):
@@ -96,8 +110,11 @@ def main():
             label_el.string = "\n     ▸ " + label_el.get_text()
         print(body.get_text())
 
-two_three_base = int('0xB0', 16)
-others_base = int('0x2070', 16)
+
+TWO_THREE_BASE = int('0xB0', 16)
+OTHERS_BASE = int('0x2070', 16)
+
+
 def _super_script(number_string):
     """Converts an input string of (ascii) numbers into unicode superscript characters"""
     if len(number_string) > 1:
@@ -105,9 +122,10 @@ def _super_script(number_string):
     number = int(number_string)
     if number == 1:
         return '\u00B9'
-    base = two_three_base if number in [2,3] else others_base
+    base = TWO_THREE_BASE if number in [2, 3] else OTHERS_BASE
     code = base + number
     return chr(code)
+
 
 if __name__ == '__main__':
     main()
