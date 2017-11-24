@@ -60,7 +60,7 @@ def main():
 
         # superscript numbers
         for super_el in body.find_all(class_="ty_hom"):
-            super_el.string = super_script(super_el.get_text().strip())
+            super_el.string = _super_script(super_el.get_text().strip())
         # part of speech, category/tag
         for info in body.select('.ps, .lev'):
             info.string = bcolors.BOLD + info.get_text() + bcolors.ENDC
@@ -98,9 +98,10 @@ def main():
 
 two_three_base = int('0xB0', 16)
 others_base = int('0x2070', 16)
-def super_script(number_string):
+def _super_script(number_string):
+    """Converts an input string of (ascii) numbers into unicode superscript characters"""
     if len(number_string) > 1:
-        return ''.join([super_script(c) for c in number_string])
+        return ''.join([_super_script(c) for c in number_string])
     number = int(number_string)
     if number == 1:
         return '\u00B9'
