@@ -86,7 +86,7 @@ alias ＪＰ=jp
 # alternative: w3m "http://m.endic.naver.com/search.nhn?query=${@// /%20}&searchOption=all#ly2"
 # alternative: mac_dic_lookup "뉴에이스 국어사전" "$*"
 function ko() {
-    mac_dic_lookup "뉴에이스 영한사전 / 뉴에이스 한영사전" "$*" | format_dic_entries.py ko | less -R
+    mac_dic_lookup "뉴에이스 영한사전 / 뉴에이스 한영사전" "$*" html | format_dic_entries.py ko | less -R
     save_word 'ko' "$*" ;
 }
 
