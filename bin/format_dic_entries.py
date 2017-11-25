@@ -3,6 +3,8 @@
 import re
 import sys
 
+from bs4 import BeautifulSoup
+
 ENTRY_SEP = '============== END ENTRY =============='
 
 
@@ -17,6 +19,7 @@ class bcolors:
     UNDERLINE = '\033[4m'
     BLACK_ON_GRAY = '\033[1;30;47m'
     WHITE_ON_RED = '\033[1;37;41m'
+    DARK_GRAY = '\033[1;30;40m'
 
 
 def main():
@@ -43,15 +46,50 @@ def main():
 
 def print_entry(lang, entry_text):
     if lang == 'en':
-        for line in entry_text.splitlines():
-            line = re.sub(r'\|(.+?)\|', bcolors.HEADER + r'/\1/' + bcolors.ENDC, line)
+        try:
+            soup = BeautifulSoup(entry_text, 'lxml')
+        except Exception as e:
+            print("Error parsing stdin in format_dic_entries.py; did you input text instead of HTML?")
+            raise e
+        body = soup.find("body")
+
+        # superscript numbers
+        for super_el in body.find_all(class_="ty_hom"):
+            super_el.string = _super_script(super_el.get_text().strip())
+        # links
+        for anchor in body.select('a'):
+            anchor.string = bcolors.OKBLUE + anchor.get_text() + bcolors.ENDC
+        # pronunciation keys
+        for pronunciation in body.select('.pr, .prx'):
+            pronunciation.string = bcolors.WARNING + pronunciation.get_text() + bcolors.ENDC
+        # grammar notes
+        for gg in body.select('.gg'):
+            gg.string = bcolors.DARK_GRAY + gg.get_text() + bcolors.ENDC
+        # part of speech
+        for gg in body.select('.tg_pos'):
+            gg.string = bcolors.BOLD + gg.get_text() + bcolors.ENDC
+        # bullets and section headers
+        for subsense in body.select('.tg_subsense'):
+            bullet = subsense.contents[0]
+        for label in body.select('.ty_label.tg_se2'):
+            label.string = bcolors.OKGREEN + bcolors.BOLD + label.get_text() + bcolors.ENDC
+        for header in body.select('.subEntry > .l'):
+            header.string = '\n' + bcolors.WARNING + header.get_text() + bcolors.ENDC
+        for header in body.select('.ty_label.tg_etym'):
+            header.string = '\n\n' + bcolors.WHITE_ON_RED + header.get_text().strip() + bcolors.ENDC + "\n\n"
+        # sections
+        for section in body.select('.se2, .subEntry'):
+            section.string = '\n' + section.get_text()
+
+        text = body.get_text()
+        # print(body.get_text())
+        for line in text.splitlines():
             line = re.sub(r'▶', '\n\n ' + bcolors.FAIL + '▶ ' + bcolors.ENDC, line)
-            line = re.sub(r'• ', '\n   ' + bcolors.OKGREEN + '• ' + bcolors.ENDC, line)
-            line = re.sub(r'([‘“])(.+?)([’”])', bcolors.WARNING + r'“\2”' + bcolors.ENDC, line)
+            line = re.sub(r'• ', '\n   ' + bcolors.OKBLUE + '• ' + bcolors.ENDC, line)
+            # line = re.sub(r'([‘“])(.+?)([’”])', bcolors.WARNING + r'“\2”' + bcolors.ENDC, line)
             print(line)
     elif lang == 'ko':
         # requires HTML input
-        from bs4 import BeautifulSoup
         try:
             soup = BeautifulSoup(entry_text, 'lxml')
         except Exception as e:
@@ -114,7 +152,6 @@ def print_entry(lang, entry_text):
         print(body.get_text())
     elif lang == 'zh':
         # requires HTML input
-        from bs4 import BeautifulSoup
         try:
             soup = BeautifulSoup(entry_text, 'lxml')
         except Exception as e:

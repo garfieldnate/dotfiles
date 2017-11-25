@@ -105,12 +105,12 @@ function zhtrad() {
 }
 
 function en() {
-    mac_dic_lookup "New Oxford American Dictionary" "$*" | format_dic_entries.py en | less -R;
+    mac_dic_lookup "New Oxford American Dictionary" "$*" html | format_dic_entries.py en | less -R;
     save_word 'en' "$*" ;
 }
 
 function thesaurus() {
-    mac_dic_lookup  "Oxford American Writer's Thesaurus" "$*" | format_dic_entries.py en | less -R
+    mac_dic_lookup  "Oxford American Writer's Thesaurus" "$*" html | format_dic_entries.py en | less -R
     save_word 'en' "$*" ;
 }
 
