@@ -15,6 +15,8 @@ class bcolors:
     ENDC = '\033[0m'
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
+    BLACK_ON_GRAY = '\033[1;30;47m'
+    WHITE_ON_RED = '\033[1;37;41m'
 
 
 def main():
@@ -48,17 +50,68 @@ def print_entry(lang, entry_text):
             line = re.sub(r'([‘“])(.+?)([’”])', bcolors.WARNING + r'“\2”' + bcolors.ENDC, line)
             print(line)
     elif lang == 'ko':
-        for line in entry_text.splitlines():
-            line = re.sub(r'\|(.+?)\|', bcolors.HEADER + r'/\1/' + bcolors.ENDC, line)
-            line = re.sub(r'• ', '\n   ' + bcolors.OKGREEN + '• ' + bcolors.ENDC, line)
-            # circled numbers
-            line = re.sub(r'([\u2460-\u2473])', '\n\n' + bcolors.HEADER + r'\1 ' + bcolors.ENDC, line)
-            line = re.sub(r'(\d+\.)《', '\n\n' + bcolors.FAIL + r'\1' + bcolors.ENDC + '《', line)
-            line = re.sub(r'☞', bcolors.BOLD + '☞' + bcolors.ENDC, line)
-            line = re.sub(r'(")(.+?)(")', bcolors.WARNING + r'“\2”' + bcolors.ENDC, line)
-            line = re.sub(r'(「)(.+?)(」)', bcolors.OKGREEN + r'「\2」' + bcolors.ENDC, line)
-            line = re.sub(r'(《)(.+?)(》)', bcolors.BOLD + r'《\2》' + bcolors.ENDC, line)
-            print(line)
+        # requires HTML input
+        from bs4 import BeautifulSoup
+        try:
+            soup = BeautifulSoup(entry_text, 'lxml')
+        except Exception as e:
+            print("Error parsing stdin in format_dic_entries.py; did you input text instead of HTML?")
+            raise e
+
+        body = soup.find("body")
+
+        # simplest way to pretty print this is to edit text in selected nodes and then get text for the whole document
+
+        # superscript numbers
+        for super_el in body.find_all(class_="ty_hom"):
+            super_el.string = _super_script(super_el.get_text().strip())
+        # part of speech, category/tag
+        for info in body.select('.ps, .lev'):
+            info.string = bcolors.BOLD + info.get_text() + bcolors.ENDC
+        # pronunciation keys
+        for pronunciation in body.select('.pr, .prx'):
+            pronunciation.string = bcolors.WARNING + pronunciation.get_text() + bcolors.ENDC
+        # usage notes
+        for oup in body.select('.oup_label'):
+            oup.string = bcolors.OKGREEN + oup.get_text() + bcolors.ENDC
+        # translations of example sentences
+        for trg in body.select('.exg .trg'):
+            trg.string = '\n      ' + trg.get_text()
+        # example sentences
+        for exg in body.select('.exg'):
+            exg.string = "\n   ▸ " + exg.get_text()
+        # italics (marks headword in example sentences)
+        for italic in body.select('.italic'):
+            italic.string = bcolors.UNDERLINE + italic.get_text().strip() + bcolors.ENDC
+        # bullet numbers
+        for sn_el in body.select('.gramb > .semb > .sn'):
+            sn_el.string = '\n\n' + bcolors.WARNING + sn_el.get_text() + bcolors.ENDC
+        for sn_el in body.select('.semb .semb .sn'):
+            sn_el.string = '\n' + bcolors.FAIL + sn_el.get_text() + ' ' + bcolors.ENDC
+        for sn_el in body.select('.idmsec .sn'):
+            sn_el.string = '\n ' + bcolors.FAIL + sn_el.get_text() + ' ' + bcolors.ENDC
+        # links
+        for anchor in body.select('a'):
+            anchor.string = bcolors.OKBLUE + anchor.get_text() + bcolors.ENDC
+        # italic styling inside boxes unfortunately ends the box styling, so we have to restart it. TODO: color stack
+        for italic in body.select('.box .italic'):
+            italic.string = italic.get_text() + bcolors.BLACK_ON_GRAY
+        # boxes
+        for box in body.select('.box'):
+            box.string = '\n\n' + bcolors.BLACK_ON_GRAY + box.get_text() + bcolors.ENDC
+        # phrases
+        for label in body.select('.idmGrp .t_label'):
+            label.string = '\n\n' + bcolors.WHITE_ON_RED + label.get_text().strip() + bcolors.ENDC
+        # same problem as with box; TODO: color stack
+        for italic in body.select('.idm .italic'):
+            italic.string = italic.get_text() + bcolors.WARNING
+        for idm in body.select('.idm'):
+            idm.string = '\n\n' +  bcolors.WARNING + idm.get_text() + bcolors.ENDC
+        for semb in body.select('.idmsec > .semb'):
+            if 'idm' in semb.previous_sibling['class']:
+                semb.string = '\n' + semb.get_text()
+
+        print(body.get_text())
     elif lang == 'zh':
         # requires HTML input
         from bs4 import BeautifulSoup
