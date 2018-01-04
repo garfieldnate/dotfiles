@@ -56,28 +56,52 @@ function save_word {
     esac
 }
 
+function log_lookup() {
+    echo $@ >> ~/dic_lookup.log
+}
+
+# loop prompt for words to lookup
+function dic() {
+    while read -p "lookup:" line;
+    do
+        lookup_$1 $line | less -RFX
+    done
+}
+
 # all of the mac_dic_lookup commands below require installing the desired dictionary in Dictionary.app
 # code for the lookup script is at https://github.com/garfieldnate/DictionaryKit
 
 # pip3 install leo-cli
 # alternative: mac_dic_lookup "Duden-Wissensnetz deutsche Sprache" "$*"
 # alternative: mac_dic_lookup "Oxford German Dictionary" "$*"
+function lookup_de() {
+    log_lookup de $@
+    leo $@
+}
 function de() {
-    leo $@ | less;
+    lookup_de $@ | less;
     save_word 'de' "$*";
 }
 
 # alternative: mac_dic_lookup "Multidictionnaire de la langue française" "$*"
+function lookup_fr() {
+    log_lookup fr $@
+    leo -l fr $@
+}
 function fr() {
-    leo -l fr $@ | less;
-    save_word'fr' "$*" ;
+    lookup_fr $@ | less;
+    save_word 'fr' "$*" ;
 }
 
 # pip3 install myougiden
 # alternative: mac_dic_lookup "ウィズダム英和辞典 / ウィズダム和英辞典" "$*"
 # alternative: mac_dic_lookup "スーパー大辞林" "$*"
+function lookup_jp() {
+    log_lookup jp $@
+    myougiden --human -c $@
+}
 function jp() {
-    myougiden $@;
+    lookup_jp $@;
     save_word 'jp' "$*" ;
 }
 alias ｊｐ=jp
@@ -85,32 +109,52 @@ alias ＪＰ=jp
 
 # alternative: w3m "http://m.endic.naver.com/search.nhn?query=${@// /%20}&searchOption=all#ly2"
 # alternative: mac_dic_lookup "뉴에이스 국어사전" "$*"
+function lookup_ko() {
+    log_lookup ko $@
+    mac_dic_lookup "뉴에이스 영한사전 / 뉴에이스 한영사전" "$*" html | format_dic_entries.py ko
+}
 function ko() {
-    mac_dic_lookup "뉴에이스 영한사전 / 뉴에이스 한영사전" "$*" html | format_dic_entries.py ko | less -R
+    lookup_ko $@ | less -R
     save_word 'ko' "$*" ;
 }
 
 # also available: 现代汉语规范词典
+function lookup_zh() {
+    log_lookup zh $@
+    mac_dic_lookup "牛津英汉汉英词典" "$*" html | format_dic_entries.py zh
+}
 function zh() {
-    mac_dic_lookup "牛津英汉汉英词典" "$*" html | format_dic_entries.py zh | less -R
+    lookup_zh $@ | less -R
     save_word 'zh' "$*" ;
 }
 alias zhsimple=zh
 
 # gem install bcat
 # TODO: parse the HTML and show in the CLI
+function lookup_zhtrad() {
+    log_lookup zhtrad $@
+    mac_dic_lookup "五南國語活用辭典" "$*" html
+}
 function zhtrad() {
-    mac_dic_lookup "五南國語活用辭典" "$*" html | bcat
+    lookup_zhtrad $@ | bcat
     save_word 'zh' "$*" ;
 }
 
+function lookup_en() {
+    log_lookup en $@
+    mac_dic_lookup "New Oxford American Dictionary" "$*" html | format_dic_entries.py en
+}
 function en() {
-    mac_dic_lookup "New Oxford American Dictionary" "$*" html | format_dic_entries.py en | less -R;
+    lookup_en $@ | less -R;
     save_word 'en' "$*" ;
 }
 
+function lookup_thesaurus() {
+    log_lookup thesaurus $@
+    mac_dic_lookup  "Oxford American Writer's Thesaurus" "$*" html | format_dic_entries.py en
+}
 function thesaurus() {
-    mac_dic_lookup  "Oxford American Writer's Thesaurus" "$*" html | format_dic_entries.py en | less -R
+    lookup_thesaurus $@ | less -R
     save_word 'en' "$*" ;
 }
 
