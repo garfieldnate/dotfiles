@@ -12,6 +12,7 @@ alias -- -="cd -"
 alias g="git"
 alias h="history"
 alias j="jobs"
+alias chrome="/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome"
 alias p3="python3"
 alias py3="p3"
 
