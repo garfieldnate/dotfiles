@@ -199,12 +199,56 @@ def print_entry(lang, entry_text):
         for label_el in body.select('.gramb > .semb > .semb .exg'):
             label_el.string = "\n     ▸ " + label_el.get_text()
         print(body.get_text())
+    elif lang == 'th':
+        # requires HTML input
+        try:
+            soup = BeautifulSoup(entry_text, 'lxml')
+        except Exception as e:
+            print("Error parsing stdin in format_dic_entries.py; did you input text instead of HTML?")
+            raise e
+
+        indent = '  '
+
+        for sequence in soup.select(".sequence-number"):
+            sequence.string = _super_script(sequence.string)
+        for li in soup.find_all('li'):
+            li.string = indent + '•' + li.string.strip()
+        for syn_header in soup.select('.syns-header'):
+            header_string = syn_header.string.strip()
+            syn_header.string = indent + bcolors.OKGREEN + header_string + bcolors.ENDC + ' '
+        for syn_header in soup.select('.ants-header'):
+            header_string = syn_header.string.strip()
+            syn_header.string = indent + bcolors.FAIL + header_string + bcolors.ENDC + ' '
+        for syn_header in soup.select('.trans-label'):
+            header_string = syn_header.string.strip()
+            syn_header.string = indent + bcolors.UNDERLINE + header_string + bcolors.ENDC + ' '
+
+        # simplest way to pretty print this is to edit text in selected nodes and then get text for the whole document
+        for entry in soup.select(".entry-container"):
+            header = entry.select('.header')[0]
+            header_string = bcolors.HEADER + bcolors.UNDERLINE + header.get_text() + bcolors.ENDC
+
+            cat = entry.select('.category')
+            classifier = entry.select('.classifier')
+            if cat or classifier:
+                cat_string = bcolors.WARNING
+                if cat:
+                    cat_string += cat[0].string
+                    cat[0].decompose()
+                if classifier:
+                    cat_string += ' (' + classifier[0].string + ')'
+                    classifier[0].decompose()
+                cat_string += bcolors.ENDC
+                header_string += ' ' + cat_string
+            header.string = header_string
+
+            text = entry.get_text().strip()
+            text = re.sub('\n{3,}', '\n\n', text)
+            print(text)
 
 
 TWO_THREE_BASE = int('0xB0', 16)
 OTHERS_BASE = int('0x2070', 16)
-
-
 def _super_script(number_string):
     """Converts an input string of (ascii) numbers into unicode superscript characters"""
     if len(number_string) > 1:

@@ -130,6 +130,16 @@ function zh() {
 }
 alias zhsimple=zh
 
+# https://github.com/garfieldnate/Lexitron-Mac
+function lookup_th() {
+    log_lookup th $@
+    mac_dic_lookup "LEXiTRON English-Thai, Thai-English" "$*" html | format_dic_entries.py th
+}
+function th() {
+    lookup_th $@ | less -R
+    save_word 'th' "$*"
+}
+
 # gem install bcat
 # TODO: parse the HTML and show in the CLI
 function lookup_zhtrad() {
