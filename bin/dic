@@ -1,0 +1,78 @@
+#!/usr/bin/env python3
+# Start a prompt that looks up words in the given language. Results are piped to less,
+# and if the user presses anything except an arrow then the next word lookup is started
+import cmd
+import fcntl
+import os
+import pexpect
+import readline
+import signal
+import struct
+import sys
+import termios
+
+ESCAPE = b'\x1b'
+UP = b'\x1bOA'
+DOWN = b'\x1bOB'
+LEFT = b'\x1bOC'
+RIGHT = b'\x1bOD'
+DEL = b'\x7f'
+
+class LookupCmd(cmd.Cmd):
+    def __init__(self, language):
+        super().__init__()
+        self.language = language
+        self.prompt = "Lookup: "
+        self._next_char = ''
+
+    def default(self, line):
+        """Whenever the user presses enter look up the word they entered (unless it was empty)"""
+        self.lookup_less(line)
+        self._set_prompt()
+
+    def _set_prompt(self):
+        """Pre-fill the next user input using the last character they pressed"""
+        def hook():
+            readline.insert_text(self._next_char)
+            readline.redisplay()
+        readline.set_pre_input_hook(hook)
+
+    def lookup_less(self, word):
+        child = pexpect.spawn(f'/bin/bash -c "source ~/.aliases; lookup_{self.language} {word} | less -RX"')
+        self.p = child
+        # Nope! See https://github.com/pexpect/pexpect/issues/465
+        # signal.signal(signal.SIGWINCH, self.sigwinch_passthrough)
+        child.interact(input_filter=self.less_input_filter)
+        child.wait()
+        child.close(force=True)
+        child.terminate(force=True)
+
+    def less_input_filter(self, user_input):
+        """Pass through up/down arrows, but use other input as a signal to quit.
+        Readable input sent by the user should be used as the beginning of the next word to look up."""
+        global last_string
+        if user_input in [UP, DOWN, LEFT, RIGHT]:
+            return user_input
+        elif not self._is_readable_input(user_input):
+            self._next_char = ''
+        else:
+            self._next_char = user_input.decode('utf-8')
+        # Quit less
+        return b'q'
+
+    def _is_readable_input(self, user_input):
+        if (not user_input or # empty input
+            ESCAPE in user_input or # CTRL sequences
+            user_input == DEL or # delete/backspace
+            (len(user_input) == 1 and ord(user_input) < 33)): # space or non-readable ASCII
+            return False
+        return True
+
+def main():
+    if len(sys.argv) != 2:
+        print(f"Usage: {sys.argv[0]} <language>")
+        exit(1)
+    LookupCmd(sys.argv[1]).cmdloop()
+
+if __name__ == '__main__':
+    main()

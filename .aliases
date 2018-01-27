@@ -61,14 +61,6 @@ function log_lookup() {
     echo $@ >> ~/dic_lookup.log
 }
 
-# loop prompt for words to lookup
-function dic() {
-    while read -p "lookup:" line;
-    do
-        lookup_$1 $line | less -RFX
-    done
-}
-
 # all of the mac_dic_lookup commands below require installing the desired dictionary in Dictionary.app
 # code for the lookup script is at https://github.com/garfieldnate/DictionaryKit
 
