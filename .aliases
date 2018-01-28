@@ -64,7 +64,7 @@ function log_lookup() {
 # all of the mac_dic_lookup commands below require installing the desired dictionary in Dictionary.app
 # code for the lookup script is at https://github.com/garfieldnate/DictionaryKit
 
-# pip3 install leo-cli
+# pip3 install leo-cli (fork has more features: https://github.com/garfieldnate/leo-cli.git, branch ansii_formatting)
 # alternative: mac_dic_lookup "Duden-Wissensnetz deutsche Sprache" "$*"
 # alternative: mac_dic_lookup "Oxford German Dictionary" "$*"
 function lookup_de() {
