@@ -28,6 +28,7 @@ class LookupCmd(cmd.Cmd):
     def default(self, line):
         """Whenever the user presses enter look up the word they entered (unless it was empty)"""
         self.lookup_less(line)
+        print("\n")
         self._set_prompt()
 
     def _set_prompt(self):
