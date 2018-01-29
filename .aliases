@@ -107,7 +107,7 @@ function lookup_ko() {
     mac_dic_lookup "뉴에이스 영한사전 / 뉴에이스 한영사전" "$*" html | format_dic_entries.py ko
 }
 function ko() {
-    lookup_ko $@ | less -RF
+    lookup_ko $@ | less -RFX
     save_word 'ko' "$*" ;
 }
 
@@ -117,7 +117,7 @@ function lookup_zh() {
     mac_dic_lookup "牛津英汉汉英词典" "$*" html | format_dic_entries.py zh
 }
 function zh() {
-    lookup_zh $@ | less -RF
+    lookup_zh $@ | less -RFX
     save_word 'zh' "$*" ;
 }
 alias zhsimple=zh
@@ -128,7 +128,7 @@ function lookup_th() {
     mac_dic_lookup "LEXiTRON English-Thai, Thai-English" "$*" html | format_dic_entries.py th
 }
 function th() {
-    lookup_th $@ | less -RF
+    lookup_th $@ | less -RFX
     save_word 'th' "$*"
 }
 
@@ -148,7 +148,7 @@ function lookup_en() {
     mac_dic_lookup "New Oxford American Dictionary" "$*" html | format_dic_entries.py en
 }
 function en() {
-    lookup_en $@ | less -RF;
+    lookup_en $@ | less -RFX;
     save_word 'en' "$*" ;
 }
 
@@ -157,7 +157,7 @@ function lookup_thesaurus() {
     mac_dic_lookup  "Oxford American Writer's Thesaurus" "$*" html | format_dic_entries.py en
 }
 function thesaurus() {
-    lookup_thesaurus $@ | less -RF
+    lookup_thesaurus $@ | less -RFX;
     save_word 'en' "$*" ;
 }
 
