@@ -21,15 +21,20 @@ DEL = b'\x7f'
 class LookupCmd(cmd.Cmd):
     def __init__(self, language):
         super().__init__()
-        self.language = language
         self.prompt = "Lookup: "
         self._next_char = ''
 
-    def default(self, line):
-        """Whenever the user presses enter look up the word they entered (unless it was empty)"""
-        self.lookup_less(line)
-        print("\n")
-        self._set_prompt()
+        def get_lookup(language):
+            """Whenever the user presses enter look up the word they entered (unless it was empty)"""
+            def lookup(self, line):
+                self.lookup_less(language, line)
+                print("\n")
+                self._set_prompt()
+            return lookup
+
+        setattr(LookupCmd, 'default', get_lookup(language))
+        for lang in ['en', 'de', 'zh', 'ko', 'th']:
+            setattr(LookupCmd, 'do_' + lang, get_lookup(lang))
 
     def _set_prompt(self):
         """Pre-fill the next user input using the last character they pressed"""
@@ -38,8 +43,8 @@ class LookupCmd(cmd.Cmd):
             readline.redisplay()
         readline.set_pre_input_hook(hook)
 
-    def lookup_less(self, word):
-        child = pexpect.spawn(f'/bin/bash -c "source ~/.aliases; lookup_{self.language} {word} | less -RX"')
+    def lookup_less(self, language, word):
+        child = pexpect.spawn(f'/bin/bash -c "source ~/.aliases; lookup_{language} {word} | less -RX"')
         self.p = child
         # Nope! See https://github.com/pexpect/pexpect/issues/465
         # signal.signal(signal.SIGWINCH, self.sigwinch_passthrough)
