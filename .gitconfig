@@ -188,3 +188,6 @@
 [user]
 	name = Nathan Glenn
 	email = garfieldnate@gmail.com
+
+[rerere]
+	enabled = true
