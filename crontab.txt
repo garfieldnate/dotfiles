@@ -1,0 +1,5 @@
+MAILTO=""
+0 12 * * 0  updatedb-myougiden -f
+0 * * * *  /Users/nglenn/Documents/@archive/backup.sh
+0 * * * *  gmvault sync -t quick -d $HOME/pCloud\ Drive/Omnis/mail/gmvault-db-garfieldnate garfieldnate@gmail.com
+0 0 * * 0 rm /Users/nglenn/dev/tomcat/main/logs/*
