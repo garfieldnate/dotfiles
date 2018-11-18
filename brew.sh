@@ -53,5 +53,11 @@ brew install rename
 brew install tree
 brew install vbindiff
 
+brew tap caskroom/fonts
+# popular for use with iTerm2
+brew cask install font-source-code-pro
+
+brew cask install gmvault
+
 # Remove outdated versions from the cellar.
 brew cleanup

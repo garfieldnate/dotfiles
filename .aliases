@@ -8,11 +8,11 @@ alias .....="cd ../../../.."
 alias ~="cd ~" # `cd` is probably faster to type though
 alias -- -="cd -"
 
-# Shortcuts
+# Shortcuts/typos
 alias g="git"
+alias hit="git"
 alias h="history"
 alias j="jobs"
-alias chrome="/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome"
 alias p3="python3"
 alias py3="p3"
 
@@ -65,6 +65,7 @@ function log_lookup() {
 # code for the lookup script is at https://github.com/garfieldnate/DictionaryKit
 
 # pip3 install leo-cli (fork has more features: https://github.com/garfieldnate/leo-cli.git, branch ansii_formatting)
+
 # alternative: mac_dic_lookup "Duden-Wissensnetz deutsche Sprache" "$*"
 # alternative: mac_dic_lookup "Oxford German Dictionary" "$*"
 function lookup_de() {
