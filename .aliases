@@ -327,3 +327,5 @@ alias joshtime="TZ=America/Denver date"
 alias arizonatime="TZ=UTC+7 date"
 alias chelantime="TZ=UTC+7 date"
 alias japantime="TZ=Japan date"
+
+alias b="buku --suggest"
