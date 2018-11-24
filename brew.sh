@@ -52,6 +52,8 @@ brew install pv
 brew install rename
 brew install tree
 brew install vbindiff
+brew install peco
+brew install buku
 
 brew tap caskroom/fonts
 # popular for use with iTerm2
