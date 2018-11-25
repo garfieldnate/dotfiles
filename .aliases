@@ -326,4 +326,3 @@ alias chelantime="TZ=UTC+7 date"
 alias japantime="TZ=Japan date"
 
 alias b="buku --suggest"
-export EDITOR="subl -n -w"
