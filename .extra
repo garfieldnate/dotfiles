@@ -1,0 +1,12 @@
+# Stuff in this file
+source ~/perl5/perlbrew/etc/bashrc
+perlbrew switch 5.28.0
+
+# Common project paths
+export DOTFILES_HOME=~/dev/workspaces/personal/dotfiles
+alias dotfiles="cd $DOTFILES_HOME"
+
+export PATH=/usr/local/Cellar/ruby/2.4.0/bin:$PATH
+alias octopress='bundle exec octopress'
+
+
