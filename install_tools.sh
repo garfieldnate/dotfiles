@@ -34,4 +34,7 @@ cpanm install Mozilla::CA
 pip3 install buku
 mkdir -p ~/.local/share/buku
 ln -s ~/Dropbox/appdata/bookmarks.db ~/.local/share/buku/bookmarks.db
+mkdir -p ~/.bash_completion.d
+curl https://raw.githubusercontent.com/jarun/Buku/master/auto-completion/bash/buku-completion.bash > ~/.bash_completion.d/buku-completion.bash
 
+echo "Please manually clone and install the mac_port branch of https://github.com/garfieldnate/oil"
