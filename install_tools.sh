@@ -8,6 +8,10 @@ pip3 install git+https://github.com/garfieldnate/leo-cli.git@ansii_formatting
 # Japanese dictionary lookup
 pip3 install myougiden
 updatedb-myougiden -f
+# other dictionary-related tools
+pip3 install lxml
+pip3 install git+https://github.com/garfieldnate/tango.git
+echo "please synch ~/.tangocho with ~/pCloud\ Drive/.tangocho"
 
 curl -s "https://get.sdkman.io" | bash
 sdk install java
