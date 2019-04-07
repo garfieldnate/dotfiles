@@ -52,6 +52,7 @@ brew install pv
 brew install rename
 brew install tree
 brew install vbindiff
+brew install jq
 brew install bat
 brew install peco
 brew install buku
