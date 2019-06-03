@@ -61,5 +61,7 @@ brew cask install font-source-code-pro
 
 brew cask install gmvault
 
+brew install newsboat
+
 # Remove outdated versions from the cellar.
 brew cleanup
