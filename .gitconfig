@@ -12,6 +12,8 @@
 	# Show the diff between the latest commit and the current state
 	d = !"git diff-index --quiet HEAD -- || clear; git --no-pager diff --patch-with-stat"
 
+	dw = diff --color-words
+
 	# `git di $number` shows the diff between the state `$number` revisions ago and the current state
 	di = !"d() { git diff --patch-with-stat HEAD~$1; }; git diff-index --quiet HEAD -- || clear; d"
 
@@ -107,10 +109,7 @@
 	# Prevent showing files whose names contain non-ASCII symbols as unversioned.
 	# http://michael-kuehnel.de/git/2014/11/21/git-mac-osx-and-german-umlaute.html
 	precomposeunicode = false
-
-	# Speed up commands involving untracked files such as `git status`.
-	# https://git-scm.com/docs/git-update-index#_untracked_cache
-	untrackedCache = true
+	editor = subl -n -w
 
 [color]
 
@@ -141,11 +140,13 @@
 
 	# https://help.github.com/articles/signing-commits-using-gpg/
 	#gpgsign = true
+	verbose = true
 
 [diff]
 
 	# Detect copies as well as renames
 	renames = copies
+	tool = fmdiff
 
 [diff "bin"]
 
@@ -163,14 +164,13 @@
 	log = true
 
 [push]
-	# https://git-scm.com/docs/git-config#git-config-pushdefault
-	default = simple
+
+	# Use the Git 1.x.x default to avoid errors on machines with old Git
+	# installations. To use `simple` instead, add this to your `~/.extra` file:
+	# `git config --global push.default simple`. See http://git.io/mMah-w.
+	default = upstream
 	# Make `git push` push relevant annotated tags when pushing branches out.
 	followTags = true
-
-[branch]
-	# Always rebase branches when pulling
-	autosetuprebase = always
 
 # URL shorthands
 
@@ -196,7 +196,36 @@
 
 [user]
 	name = Nathan Glenn
-	email = garfieldnate@gmail.com
+	email = nathan-gary.glenn@trivago.com
+	signingkey = 329414223EBA6321
+[credential]
+	helper = osxkeychain
+[branch]
+	autosetuprebase = always
+[github]
+	user = garfieldnate
 
+[diff]
+  tool = meld
+[difftool]
+  prompt = false
+[difftool "meld"]
+  trustExitCode = true
+  cmd = open -W -a Meld --args \"$LOCAL\" \"$REMOTE\"
+[merge]
+  tool = meld
+[mergetool]
+  prompt = false
+[mergetool "meld"]
+  trustExitCode = true
+  cmd = open -W -a Meld --args --auto-merge \"$LOCAL\" \"$BASE\" \"$REMOTE\" --output=\"$MERGED\"
+# [difftool "sourcetree"]
+# 	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
+# 	path =
+# [mergetool "sourcetree"]
+# 	cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+# 	trustExitCode = true
+[gpg]
+	program = gpg
 [rerere]
 	enabled = true
